@@ -1,0 +1,98 @@
+CREATE DATABASE academia_relacional;
+
+\c academia_relacional;
+
+CREATE TABLE beneficios (
+    id_beneficio SERIAL PRIMARY KEY,
+    nome VARCHAR(64) NOT NULL,
+    descricao VARCHAR(255)
+);
+
+CREATE TABLE planos (
+    id_plano SERIAL PRIMARY KEY,
+    nome VARCHAR(64) NOT NULL,
+    descricao VARCHAR(64) NOT NULL,
+    valor DECIMAL(10,2) NOT NULL,
+    duracao SMALLINT,
+    fidelidade SMALLINT
+);
+
+CREATE TABLE clientes (
+    id_cliente SERIAL PRIMARY KEY,
+    nome VARCHAR(64) NOT NULL,
+    data_nascimento DATE NOT NULL,
+    data_adesao DATE NOT NULL,
+    status SMALLINT NOT NULL,
+    id_telefone INT,
+    id_plano INT
+);
+
+CREATE TABLE telefones (
+    id_telefone SERIAL PRIMARY KEY,
+    numero VARCHAR(16) NOT NULL
+);
+
+CREATE TABLE funcionarios (
+    id_funcionario SERIAL PRIMARY KEY,
+    nome VARCHAR(64) NOT NULL,
+    data_nascimento DATE NOT NULL,
+    data_admissao DATE NOT NULL,
+    data_demissao DATE,
+    status SMALLINT NOT NULL,
+    id_telefone INT,
+    id_cargo INT
+);
+
+CREATE TABLE cargos (
+    id_cargo SERIAL PRIMARY KEY,
+    nome VARCHAR(32) NOT NULL,
+    descricao VARCHAR(128) NOT NULL,
+    salario DECIMAL(10,2)
+);
+
+CREATE TABLE manutencoes (
+    id_manutencao SERIAL PRIMARY KEY,
+    custo DECIMAL(10,2) NOT NULL,
+    status SMALLINT NOT NULL,
+    data_prevista DATE NOT NULL,
+    data_realizada DATE,
+    id_equipamento INT,
+    id_funcionario INT
+);
+
+CREATE TABLE equipamentos (
+    id_equipamento SERIAL PRIMARY KEY,
+    modelo VARCHAR(64) NOT NULL,
+    valor DECIMAL(10,2) NOT NULL,
+    status SMALLINT NOT NULL
+);
+
+CREATE TABLE planos_tem_beneficios (
+    id_plano INT NOT NULL,
+    id_beneficio INT NOT NULL,
+    PRIMARY KEY (id_plano, id_beneficio)
+);
+
+ALTER TABLE planos_tem_beneficios 
+    ADD CONSTRAINT fk_planos FOREIGN KEY (id_plano) REFERENCES planos(id_plano);
+
+ALTER TABLE planos_tem_beneficios 
+    ADD CONSTRAINT fk_beneficios FOREIGN KEY (id_beneficio) REFERENCES beneficios(id_beneficio);
+
+ALTER TABLE clientes 
+    ADD CONSTRAINT fk_clientes_plano FOREIGN KEY (id_plano) REFERENCES planos(id_plano);
+
+ALTER TABLE clientes 
+    ADD CONSTRAINT fk_clientes_telefone FOREIGN KEY (id_telefone) REFERENCES telefones(id_telefone);
+
+ALTER TABLE funcionarios 
+    ADD CONSTRAINT fk_funcionarios_telefone FOREIGN KEY (id_telefone) REFERENCES telefones(id_telefone);
+
+ALTER TABLE funcionarios 
+    ADD CONSTRAINT fk_funcionarios_cargo FOREIGN KEY (id_cargo) REFERENCES cargos(id_cargo);
+
+ALTER TABLE manutencoes 
+    ADD CONSTRAINT fk_manutencoes_funcionario FOREIGN KEY (id_funcionario) REFERENCES funcionarios(id_funcionario);
+
+ALTER TABLE manutencoes 
+    ADD CONSTRAINT fk_manutencoes_equip FOREIGN KEY (id_equipamento) REFERENCES equipamentos(id_equipamento);
