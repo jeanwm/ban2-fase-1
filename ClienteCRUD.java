@@ -1,0 +1,213 @@
+// Arquivo: ClienteCRUD.java
+import java.sql.*;
+import java.util.Scanner;
+
+public class ClienteCRUD {
+    private Connection connection;
+    private Scanner scanner;
+    
+    public ClienteCRUD(Connection connection, Scanner scanner) {
+        this.connection = connection;
+        this.scanner = scanner;
+    }
+    
+    public void menu() throws SQLException {
+        while (true) {
+            System.out.println("\n=== CLIENTES ===");
+            System.out.println("1. Cadastrar");
+            System.out.println("2. Listar");
+            System.out.println("3. Atualizar");
+            System.out.println("4. Deletar");
+            System.out.println("5. Voltar");
+            System.out.print("Escolha: ");
+            
+            int opcao = scanner.nextInt();
+            scanner.nextLine();
+            
+            switch (opcao) {
+                case 1 -> cadastrar();
+                case 2 -> listar();
+                case 3 -> atualizar();
+                case 4 -> deletar();
+                case 5 -> { return; }
+                default -> System.out.println("Opção inválida!");
+            }
+        }
+    }
+    
+    private void cadastrar() throws SQLException {
+        java.sql.Date data_nascimento = null;
+        java.sql.Date data_adesao = null;
+
+        System.out.print("Nome: ");
+        String nome = scanner.nextLine();
+
+        while (data_nascimento == null) {
+            System.out.print("Data de nascimento (dd/mm/aaaa): ");
+            String dataNascimentoStr = scanner.nextLine();
+            try {
+                data_nascimento = parseDate(dataNascimentoStr);
+            } catch (java.text.ParseException e) {
+                System.out.println("Formato de data inválido. Use dd/mm/aaaa.");
+            }
+        }
+
+        while (data_adesao == null) {
+            System.out.print("Data de adesão (dd/mm/aaaa): ");
+            String dataAdesaoStr = scanner.nextLine();
+            try {
+                data_adesao = parseDate(dataAdesaoStr);
+            } catch (java.text.ParseException e) {
+                System.out.println("Formato de data inválido. Use dd/mm/aaaa.");
+            }
+        }
+
+        System.out.print("Status: ");
+        int status = scanner.nextInt();
+        scanner.nextLine();
+        
+        System.out.print("Telefone: ");
+        String telefone = scanner.nextLine();
+
+        int idTelefone = -1;
+        String sqlInsertTelefone = "INSERT INTO telefones (numero) VALUES (?)";
+        try (PreparedStatement stmtTelefone = connection.prepareStatement(sqlInsertTelefone, Statement.RETURN_GENERATED_KEYS)) {
+            stmtTelefone.setString(1, telefone);
+            stmtTelefone.executeUpdate();
+
+            try (ResultSet generatedKeys = stmtTelefone.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    idTelefone = generatedKeys.getInt(1);
+                } else {
+                    throw new SQLException("Erro ao cadastrar, nenhum ID obtido.");
+                }
+            }
+        }
+        
+        String sqlInsertCliente = "INSERT INTO clientes (nome, data_nascimento, data_adesao, status, id_telefone) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement stmtCliente = connection.prepareStatement(sqlInsertCliente)) {
+            stmtCliente.setString(1, nome);
+            stmtCliente.setDate(2, data_nascimento);
+            stmtCliente.setDate(3, data_adesao);
+            stmtCliente.setInt(4, status);
+            stmtCliente.setInt(5, idTelefone);
+            stmtCliente.executeUpdate();
+            System.out.println("Cliente cadastrado com sucesso!");
+        }
+    }
+     
+    private void listar() throws SQLException {
+        String sql = "SELECT * FROM clientes INNER JOIN telefones ON telefones.id_telefone = clientes.id_telefone";
+
+        try (Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                System.out.printf("ID: %d | Nome: %s | Data de nascimento: %s | Data de adesão: %s | Status: %d | Telefone: %s\n",
+                    rs.getInt("id_cliente"),
+                    rs.getString("nome"),
+                    rs.getString("data_nascimento"),
+                    rs.getString("data_adesao"),
+                    rs.getInt("status"),
+                    rs.getString("numero"));
+            }
+        }
+    }
+    
+    private void atualizar() throws SQLException {
+        System.out.print("ID do cliente a atualizar: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+        
+        System.out.print("Novo nome: ");
+        String nome = scanner.nextLine();
+        
+        java.sql.Date data_nascimento = null;
+        while (data_nascimento == null) {
+            System.out.print("Nova data de nascimento (dd/mm/aaaa): ");
+            String dataNascimentoStr = scanner.nextLine();
+            try {
+                data_nascimento = parseDate(dataNascimentoStr);
+            } catch (java.text.ParseException e) {
+                System.out.println("Formato de data inválido. Use dd/mm/aaaa.");
+            }
+        }
+        
+        java.sql.Date data_adesao = null;
+        while (data_adesao == null) {
+            System.out.print("Nova data de adesão (dd/mm/aaaa): ");
+            String dataAdesaoStr = scanner.nextLine();
+            try {
+                data_adesao = parseDate(dataAdesaoStr);
+            } catch (java.text.ParseException e) {
+                System.out.println("Formato de data inválido. Use dd/mm/aaaa.");
+            }
+        }
+        
+        System.out.print("Novo status: ");
+        int status = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Telefone: ");
+        String telefone = scanner.nextLine();
+
+        int idTelefone = -1;
+        String sqlInsertTelefone = "INSERT INTO telefones (numero) VALUES (?)";
+        try (PreparedStatement stmtTelefone = connection.prepareStatement(sqlInsertTelefone, Statement.RETURN_GENERATED_KEYS)) {
+            stmtTelefone.setString(1, telefone);
+            stmtTelefone.executeUpdate();
+
+            try (ResultSet generatedKeys = stmtTelefone.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    idTelefone = generatedKeys.getInt(1);
+                } else {
+                    throw new SQLException("Erro ao cadastrar, nenhum ID obtido.");
+                }
+            }
+        }
+        
+        String sql = "UPDATE clientes SET nome = ?, data_nascimento = ?, data_adesao = ?, status = ?, id_telefone = ? WHERE id_cliente = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, nome);
+            stmt.setDate(2, data_nascimento);
+            stmt.setDate(3, data_adesao);
+            stmt.setInt(4, status);
+            stmt.setInt(5, idTelefone);
+            stmt.setInt(6, id);
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                System.out.println("Cliente atualizado com sucesso!");
+            } else {
+                System.out.println("Cliente não encontrado!");
+            }
+        }
+    }
+    
+    private void deletar() throws SQLException {
+        System.out.print("ID do cliente a deletar: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+        
+        String sql = "DELETE FROM clientes WHERE id_cliente = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                System.out.println("Cliente deletado com sucesso!");
+            } else {
+                System.out.println("Cliente não encontrado!");
+            }
+        }
+    }
+
+    // helper de data
+    private java.sql.Date parseDate(String dateString) throws java.text.ParseException {
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+        sdf.setLenient(false);
+        java.util.Date parsedUtilDate = sdf.parse(dateString);
+
+        return new java.sql.Date(parsedUtilDate.getTime());
+    }
+}
