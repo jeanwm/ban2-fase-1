@@ -1,0 +1,90 @@
+create database academia_relacional;
+
+use academia_relacional;
+
+create table beneficios (
+	id_beneficio int not null primary key auto_increment,
+	nome varchar(64) not null,
+	descricao varchar(255)
+);
+
+create table planos (
+	id_plano int not null primary key auto_increment,
+	nome varchar(64) not null,
+	descricao varchar(64) not null,
+	valor decimal(10,2) not null,
+	duracao tinyint,
+	fidelidade tinyint
+);
+
+create table clientes (
+	id_cliente int not null primary key auto_increment,
+	nome varchar(64) not null,
+	data_nascimento date not null,
+	data_adesao date not null,
+	status tinyint not null,
+	id_telefone int,
+  id_plano int
+);
+
+create table telefones (
+	id_telefone int not null primary key auto_increment,
+	numero varchar(16) not null
+);
+
+create table funcionarios (
+	id_funcionario int not null primary key auto_increment,
+	nome varchar(64) not null,
+	data_nascimento date not null,
+	data_admissao date not null,
+	data_demissao date,
+	status tinyint not null,
+	id_telefone int,
+	id_cargo int
+);
+
+create table cargos (
+	id_cargo int not null primary key auto_increment,
+	nome varchar(32) not null,
+	descricao varchar(128) not null,
+	salario decimal(10,2)
+);
+
+create table manutencoes (
+	id_manutencao int not null primary key auto_increment,
+	custo decimal(10,2) not null,
+	status tinyint not null,
+	data_prevista date not null,
+	data_realizada date,
+	id_equipamento int,
+  id_funcionario int
+);
+
+create table equipamentos (
+	id_equipamento int not null primary key auto_increment,
+	modelo varchar(64) not null,
+	valor decimal(10,2) not null,
+	status tinyint not null
+);
+
+create table planos_tem_beneficios (
+	id_plano int not null,
+	id_beneficio int not null,
+	primary key (id_plano, id_beneficio)
+);
+
+alter table planos_tem_beneficios add constraint id_plano foreign key(id_plano) references planos(id_plano);
+
+alter table planos_tem_beneficios add constraint id_beneficio foreign key(id_beneficio) references beneficios(id_beneficio);
+
+alter table clientes add constraint id_clientes_plano foreign key(id_plano) references planos(id_plano);
+
+alter table clientes add constraint id_clientes_telefone foreign key(id_telefone) references telefones(id_telefone);
+
+alter table funcionarios add constraint id_funcionarios_telefone foreign key(id_telefone) references telefones(id_telefone);
+
+alter table funcionarios add constraint id_cargo foreign key(id_cargo) references cargos(id_cargo);
+
+alter table manutencoes add constraint id_funcionario foreign key(id_funcionario) references funcionarios(id_funcionario);
+
+alter table manutencoes add constraint id_equipamento foreign key(id_equipamento) references equipamentos(id_equipamento);
