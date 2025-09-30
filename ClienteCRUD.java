@@ -18,7 +18,8 @@ public class ClienteCRUD {
             System.out.println("2. Listar");
             System.out.println("3. Atualizar");
             System.out.println("4. Deletar");
-            System.out.println("5. Voltar");
+            System.out.println("5. Vincular Plano");
+            System.out.println("6. Voltar");
             System.out.print("Escolha: ");
             
             int opcao = scanner.nextInt();
@@ -29,7 +30,8 @@ public class ClienteCRUD {
                 case 2 -> listar();
                 case 3 -> atualizar();
                 case 4 -> deletar();
-                case 5 -> { return; }
+                case 5 -> vincular();
+                case 6 -> { return; }
                 default -> System.out.println("Opção inválida!");
             }
         }
@@ -199,6 +201,50 @@ public class ClienteCRUD {
             } else {
                 System.out.println("Cliente não encontrado!");
             }
+        }
+    }
+
+    private void vincular() throws SQLException {
+        String sqlClientes = "SELECT * FROM clientes";
+
+        try (Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(sqlClientes)) {
+            System.out.println("Clientes:");
+
+            while (rs.next()) {
+                System.out.printf("ID: %d | Nome: %s\n",
+                    rs.getInt("id_cliente"),
+                    rs.getString("nome"));
+            }
+        }
+
+        String sqlPlanos = "SELECT * FROM planos";
+
+        try (Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(sqlPlanos)) {
+            System.out.println("Planos:");
+
+            while (rs.next()) {
+                System.out.printf("ID: %d | Nome: %s | Descrição: %s | Valor: %.2f\n",
+                    rs.getInt("id_plano"),
+                    rs.getString("nome"),
+                    rs.getString("descricao"),
+                    rs.getFloat("valor"));
+            }
+        }
+
+        System.out.print("ID do cliente: ");
+        int id_cliente = scanner.nextInt();
+        System.out.print("ID do plano: ");
+        int id_plano = scanner.nextInt();
+        
+        String sql = "UPDATE clientes SET id_plano = ? WHERE id_cliente = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id_plano);
+            stmt.setInt(2, id_cliente);
+            stmt.executeUpdate();
+
+            System.out.println("Vínculo cadastrado com sucesso!");
         }
     }
 
