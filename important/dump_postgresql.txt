@@ -1,0 +1,19 @@
+INSERT INTO beneficios (nome, descricao) VALUES ('Beneficio 1', 'Descricao benefício 1');
+
+INSERT INTO planos (nome, descricao, valor, duracao, fidelidade) VALUES ('Plano 1', 'Descricao plano 1', '99.90', '12', '6');
+
+INSERT INTO planos_tem_beneficios (id_plano, id_beneficio) VALUES (1, 1);
+
+INSERT INTO telefones (numero) VALUES ('47999999999');
+
+INSERT INTO telefones (numero) VALUES ('47999998888');
+
+INSERT INTO clientes (nome, data_nascimento, data_adesao, status, id_telefone, id_plano) VALUES ('Cliente Um', '2001-01-01', '2025-09-20', 1, 1, 1);
+
+INSERT INTO cargos (nome, descricao, salario) VALUES ('CEO', 'CEO da academia', '8000.00');
+
+INSERT INTO funcionarios (nome, data_nascimento, data_admissao, status, id_telefone, id_cargo) VALUES ('Funcionario 1', '2000-01-02', '2015-01-01', 1, 2, 1);
+
+INSERT INTO equipamentos (modelo, valor, status) VALUES ('Esteira', '700.00', 1);
+
+INSERT INTO manutencoes (custo, status, data_prevista, id_equipamento, id_funcionario) VALUES ('200.00', 0, '2025-10-02', 1, 1);
