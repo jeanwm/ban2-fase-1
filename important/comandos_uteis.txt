@@ -1,6 +1,13 @@
-ALTER USER postgres PASSWORD 'root'; // WSL2
+ALTER USER postgres PASSWORD 'root';
+ou
+ALTER USER postgres WITH PASSWORD 'root';
 
 sudo -i -u postgres
 psql
 
-sudo -u postgres psql
+--
+Terminal Ubuntu (WSL2):
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+sudo -u postgres
+psql
