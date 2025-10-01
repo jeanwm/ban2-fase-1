@@ -2,3 +2,5 @@ ALTER USER postgres PASSWORD 'root'; // WSL2
 
 sudo -i -u postgres
 psql
+
+sudo -u postgres psql
