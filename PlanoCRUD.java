@@ -8,7 +8,7 @@ public class PlanoCRUD {
     
     public PlanoCRUD(Connection connection, Scanner scanner) {
         this.connection = connection;
-        this.scanner    = scanner;
+        this.scanner = scanner;
     }
     
     public void menu() throws SQLException {
@@ -18,8 +18,7 @@ public class PlanoCRUD {
             System.out.println("2. Listar");
             System.out.println("3. Atualizar");
             System.out.println("4. Deletar");
-            System.out.println("5. Vincular Benefício");
-            System.out.println("6. Voltar");
+            System.out.println("5. Voltar");
             System.out.print("Escolha: ");
             
             int opcao = scanner.nextInt();
@@ -30,8 +29,7 @@ public class PlanoCRUD {
                 case 2 -> listar();
                 case 3 -> atualizar();
                 case 4 -> deletar();
-                case 5 -> vincular();
-                case 6 -> { return; }
+                case 5 -> { return; }
                 default -> System.out.println("Opção inválida!");
             }
         }
@@ -43,7 +41,7 @@ public class PlanoCRUD {
         System.out.print("Descrição: ");
         String descricao = scanner.nextLine();
         System.out.print("Valor: ");
-        float valor = scanner.nextFloat();
+        float valor = scanner.nextInt();
         System.out.print("Tempo de duração: ");
         int duracao = scanner.nextInt();
         System.out.print("Tempo de fidelidade: ");
@@ -69,7 +67,7 @@ public class PlanoCRUD {
             ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                System.out.printf("ID: %d | Nome: %s | Descrição: %s | Valor: %.2f | Tempo de duração: %s | Tempo de fidelidade: %s\n",
+                System.out.printf("ID: %d | Nome: %s | Descrição: %s | Valor: %f | Tempo de duração: %s | Tempo de fidelidade: %s\n",
                     rs.getInt("id_plano"),
                     rs.getString("nome"),
                     rs.getString("descricao"),
@@ -128,51 +126,6 @@ public class PlanoCRUD {
             } else {
                 System.out.println("Plano não encontrado!");
             }
-        }
-    }
-
-    private void vincular() throws SQLException {
-        String sqlBeneficios = "SELECT * FROM beneficios";
-
-        try (Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(sqlBeneficios)) {
-            System.out.println("Benefícios:");
-
-            while (rs.next()) {
-                System.out.printf("ID: %d | Nome: %s | Descrição: %s\n",
-                    rs.getInt("id_beneficio"),
-                    rs.getString("nome"),
-                    rs.getString("descricao"));
-            }
-        }
-
-        String sqlPlanos = "SELECT * FROM planos";
-
-        try (Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(sqlPlanos)) {
-            System.out.println("Planos:");
-
-            while (rs.next()) {
-                System.out.printf("ID: %d | Nome: %s | Descrição: %s | Valor: %.2f\n",
-                    rs.getInt("id_plano"),
-                    rs.getString("nome"),
-                    rs.getString("descricao"),
-                    rs.getFloat("valor"));
-            }
-        }
-
-        System.out.print("ID do benefício: ");
-        int id_beneficio = scanner.nextInt();
-        System.out.print("ID do plano: ");
-        int id_plano = scanner.nextInt();
-        
-        String sql = "INSERT INTO planos_tem_beneficios (id_plano, id_beneficio) VALUES (?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, id_plano);
-            stmt.setInt(2, id_beneficio);
-            stmt.executeUpdate();
-
-            System.out.println("Vínculo cadastrado com sucesso!");
         }
     }
 }

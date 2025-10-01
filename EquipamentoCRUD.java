@@ -39,7 +39,7 @@ public class EquipamentoCRUD {
         System.out.print("Modelo: ");
         String modelo = scanner.nextLine();
         System.out.print("Valor: ");
-        float valor = scanner.nextFloat();
+        float valor = scanner.nextInt();
         System.out.print("Status: ");
         int status = scanner.nextInt();
         
@@ -61,8 +61,8 @@ public class EquipamentoCRUD {
             ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                System.out.printf("ID: %d | Modelo: %s | Valor: %.2f | Status: %d\n",
-                    rs.getInt("id_equipamento"),
+                System.out.printf("ID: %d | Modelo: %s | Valor: %f | Status: %d\n",
+                    rs.getInt("id_equipamentos"),
                     rs.getString("modelo"),
                     rs.getFloat("valor"),
                     rs.getInt("status"));
@@ -77,7 +77,7 @@ public class EquipamentoCRUD {
         System.out.print("Novo modelo: ");
         String modelo = scanner.nextLine();
         System.out.print("Novo valor: ");
-        float valor = scanner.nextFloat();
+        float valor = scanner.nextInt();
         System.out.print("Novo status: ");
         int status = scanner.nextInt();
         

@@ -54,7 +54,7 @@ public class Relatorios {
     
     private void manutencoesPendentes() throws SQLException {
         String sql = """
-            SELECT e.modelo, m.data_prevista, m.custo
+            SELECT e.modelo, m.data_prevista, m.custo_previsto
             FROM manutencoes m
             JOIN equipamentos e ON m.id_equipamento = e.id_equipamento
             WHERE m.status = 0
@@ -67,7 +67,7 @@ public class Relatorios {
                 System.out.printf("Equipamento: %s | Data Prevista: %s | Custo: R$%.2f\n",
                     rs.getString("modelo"),
                     rs.getDate("data_prevista"),
-                    rs.getDouble("custo"));
+                    rs.getDouble("custo_previsto"));
             }
         }
     }
