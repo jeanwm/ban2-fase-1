@@ -9,5 +9,6 @@ psql
 Terminal Ubuntu (WSL2):
 sudo apt update
 sudo apt install postgresql postgresql-contrib
+sudo service postgresql start
 sudo -u postgres
 psql
