@@ -1,5 +1,6 @@
 // Arquivo: ManutencaoCRUD.java
 import java.sql.*;
+import java.text.ParseException;
 import java.util.Scanner;
 
 public class ManutencaoCRUD {
@@ -38,74 +39,145 @@ public class ManutencaoCRUD {
     private void cadastrar() throws SQLException {
         System.out.print("Custo: ");
         float custo = scanner.nextFloat();
+        scanner.nextLine();
+
         System.out.print("Status: ");
         int status = scanner.nextInt();
-        System.out.print("Data prevista: ");
-        String data_prevista = scanner.nextLine();
-        System.out.print("Data realizada: ");
-        String data_realizada = scanner.nextLine();
-        System.out.print("Equipamento: ");
-        int id_equipamento = scanner.nextInt();
+        scanner.nextLine();
+
+        java.sql.Date dataPrevista = null;
+        while (dataPrevista == null) {
+            System.out.print("Data prevista (dd/MM/yyyy): ");
+            String dataPrevistaStr = scanner.nextLine();
+            try {
+                dataPrevista = parseDate(dataPrevistaStr);
+            } catch (java.text.ParseException e) {
+                System.out.println("Formato de data inválido. Use dd/MM/yyyy. Exemplo: 25/12/1990");
+            }
+        }
+
+        java.sql.Date dataRealizada = null;
+        System.out.print("Data realizada (dd/MM/yyyy) [deixe em branco se não houver]: ");
+        String dataRealizadaStr = scanner.nextLine();
+        if (!dataRealizadaStr.trim().isEmpty()) {
+            try {
+                dataRealizada = parseDate(dataRealizadaStr);
+            } catch (java.text.ParseException e) {
+                System.out.println("Formato de data inválido. Usando null para data realizada.");
+            }
+        }
+
+        System.out.print("Equipamento (ID): ");
+        int idEquipamento = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Funcionário (ID): ");
+        int idFuncionario = scanner.nextInt();
+        scanner.nextLine();
+
+        String sql = "INSERT INTO manutencoes (custo, status, data_prevista, data_realizada, id_equipamento, id_funcionario) VALUES (?, ?, ?, ?, ?, ?)";
         
-        String sql = "INSERT INTO manutencoes (custo, status, data_prevista, data_realizada, id_equipamento) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setFloat(1, custo);
             stmt.setInt(2, status);
-            stmt.setString(3, data_prevista);
-            stmt.setString(4, data_realizada);
-            stmt.setInt(5, id_equipamento);
-            stmt.executeUpdate();
-
-            System.out.println("Manutenção cadastrada com sucesso!");
+            stmt.setDate(3, dataPrevista);
+            if (dataRealizada != null) {
+                stmt.setDate(4, dataRealizada);
+            } else {
+                stmt.setNull(4, Types.DATE);
+            }
+            stmt.setInt(5, idEquipamento);
+            stmt.setInt(6, idFuncionario);
+            
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Manutenção cadastrada com sucesso!");
+            }
         }
     }
     
     private void listar() throws SQLException {
         String sql = "SELECT * FROM manutencoes";
-
+        
         try (Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(sql)) {
-
+            
             while (rs.next()) {
-                System.out.printf("ID: %d | Custo: %s | Status: %d | Data prevista: %s | Data realizada: %f | Equipamento: %s\n",
+                System.out.printf("ID: %d | Custo: R$%.2f | Status: %d | Data prevista: %s | Data realizada: %s | Equipamento (ID): %d | Funcionário (ID): %d\n",
                     rs.getInt("id_manutencao"),
                     rs.getFloat("custo"),
                     rs.getInt("status"),
-                    rs.getString("data_prevista"),
-                    rs.getString("data_realizada"),
-                    rs.getInt("id_equipamento"));
+                    rs.getDate("data_prevista"),
+                    rs.getDate("data_realizada") != null ? rs.getDate("data_realizada") : "N/A",
+                    rs.getInt("id_equipamento"),
+                    rs.getInt("id_funcionario"));
             }
         }
     }
     
     private void atualizar() throws SQLException {
-        System.out.print("ID do plano a atualizar: ");
+        System.out.print("ID da manutenção a atualizar: ");
         int id = scanner.nextInt();
         scanner.nextLine();
+
         System.out.print("Novo custo: ");
         float custo = scanner.nextFloat();
+        scanner.nextLine();
+
         System.out.print("Novo status: ");
         int status = scanner.nextInt();
-        System.out.print("Nova data prevista: ");
-        String data_prevista = scanner.nextLine();
-        System.out.print("Nova data realizada: ");
-        String data_realizada = scanner.nextLine();
-        // System.out.print("Equipamento: ");
-        // int id_equipamento = scanner.nextInt();
+        scanner.nextLine();
+
+        java.sql.Date dataPrevista = null;
+        while (dataPrevista == null) {
+            System.out.print("Nova data prevista (dd/MM/yyyy): ");
+            String dataPrevistaStr = scanner.nextLine();
+            try {
+                dataPrevista = parseDate(dataPrevistaStr);
+            } catch (java.text.ParseException e) {
+                System.out.println("Formato de data inválido. Use dd/MM/yyyy.");
+            }
+        }
+
+        java.sql.Date dataRealizada = null;
+        System.out.print("Nova data realizada (dd/MM/yyyy) [deixe em branco se não houver]: ");
+        String dataRealizadaStr = scanner.nextLine();
+        if (!dataRealizadaStr.trim().isEmpty()) {
+            try {
+                dataRealizada = parseDate(dataRealizadaStr);
+            } catch (java.text.ParseException e) {
+                System.out.println("Formato de data inválido. Usando null para data realizada.");
+            }
+        }
+
+        System.out.print("Equipamento (ID): ");
+        int idEquipamento = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Funcionário (ID): ");
+        int idFuncionario = scanner.nextInt();
+        scanner.nextLine();
+
+        String sql = "UPDATE manutencoes SET custo = ?, status = ?, data_prevista = ?, data_realizada = ?, id_equipamento = ?, id_funcionario = ? WHERE id_manutencao = ?";
         
-        String sql = "UPDATE manutencoes SET custo = ?, status = ?, data_prevista = ?, data_realizada = ? WHERE id_manutencao = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setFloat(1, custo);
             stmt.setInt(2, status);
-            stmt.setString(3, data_prevista);
-            stmt.setString(4, data_realizada);
-            stmt.setInt(5, id);
+            stmt.setDate(3, dataPrevista);
+            if (dataRealizada != null) {
+                stmt.setDate(4, dataRealizada);
+            } else {
+                stmt.setNull(4, Types.DATE);
+            }
+            stmt.setInt(5, idEquipamento);
+            stmt.setInt(6, idFuncionario);
+            stmt.setInt(7, id);
+            
             int affectedRows = stmt.executeUpdate();
-
             if (affectedRows > 0) {
                 System.out.println("Manutenção atualizada com sucesso!");
             } else {
-                System.out.println("Manutenção não encontrado!");
+                System.out.println("Manutenção não encontrada!");
             }
         }
     }
@@ -126,5 +198,14 @@ public class ManutencaoCRUD {
                 System.out.println("Manutenção não encontrado!");
             }
         }
+    }
+
+    // helper de data
+    private java.sql.Date parseDate(String dateString) throws ParseException {
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+        sdf.setLenient(false);
+        java.util.Date parsedUtilDate = sdf.parse(dateString);
+
+        return new java.sql.Date(parsedUtilDate.getTime());
     }
 }

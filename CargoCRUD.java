@@ -47,7 +47,7 @@ public class CargoCRUD {
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, nome);
             stmt.setString(2, descricao);
-            stmt.setFloat(2, salario);
+            stmt.setFloat(3, salario);
             stmt.executeUpdate();
             System.out.println("Cargo cadastrado com sucesso!");
         }
@@ -58,7 +58,7 @@ public class CargoCRUD {
         try (Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                System.out.printf("ID: %d | Nome: %s | Descrição: %s | Salário: %f\n",
+                System.out.printf("ID: %d | Nome: %s | Descrição: %s | Salário: %.2f\n",
                     rs.getInt("id_cargo"),
                     rs.getString("nome"),
                     rs.getString("descricao"),

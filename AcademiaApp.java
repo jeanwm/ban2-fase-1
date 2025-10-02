@@ -49,13 +49,3 @@ public class AcademiaApp {
         }
     }
 }
-
-// Configure os dados de conexão no arquivo AcademiaApp.java
-
-// Compile todos os arquivos Java:
-// bash
-// javac *.java
-
-// Execute a aplicação:
-// bash
-// java AcademiaApp

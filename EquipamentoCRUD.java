@@ -13,7 +13,7 @@ public class EquipamentoCRUD {
     
     public void menu() throws SQLException {
         while (true) {
-            System.out.println("\n=== PLANOS ===");
+            System.out.println("\n=== EQUIPAMENTOS ===");
             System.out.println("1. Cadastrar");
             System.out.println("2. Listar");
             System.out.println("3. Atualizar");
@@ -39,7 +39,7 @@ public class EquipamentoCRUD {
         System.out.print("Modelo: ");
         String modelo = scanner.nextLine();
         System.out.print("Valor: ");
-        float valor = scanner.nextInt();
+        float valor = scanner.nextFloat();
         System.out.print("Status: ");
         int status = scanner.nextInt();
         
@@ -61,8 +61,8 @@ public class EquipamentoCRUD {
             ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                System.out.printf("ID: %d | Modelo: %s | Valor: %f | Status: %d\n",
-                    rs.getInt("id_equipamentos"),
+                System.out.printf("ID: %d | Modelo: %s | Valor: %.2f | Status: %d\n",
+                    rs.getInt("id_equipamento"),
                     rs.getString("modelo"),
                     rs.getFloat("valor"),
                     rs.getInt("status"));
@@ -77,7 +77,7 @@ public class EquipamentoCRUD {
         System.out.print("Novo modelo: ");
         String modelo = scanner.nextLine();
         System.out.print("Novo valor: ");
-        float valor = scanner.nextInt();
+        float valor = scanner.nextFloat();
         System.out.print("Novo status: ");
         int status = scanner.nextInt();
         
@@ -86,7 +86,7 @@ public class EquipamentoCRUD {
             stmt.setString(1, modelo);
             stmt.setFloat(2, valor);
             stmt.setInt(3, status);
-            stmt.setInt(6, id);
+            stmt.setInt(4, id);
             int affectedRows = stmt.executeUpdate();
 
             if (affectedRows > 0) {

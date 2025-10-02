@@ -17,19 +17,15 @@ public class Conexao {
     private Connection con;
     
     public Conexao() {
-        // String driver = "org.postgresql.Driver";
-        // String user = "postgres";
-        // String senha = "udesc";
-        // String url = "jdbc:postgresql://localhost:5432/clinica";
-
-        String driver = "com.mysql.cj.jdbc.Driver";
-        String user = "root";
+        String driver = "org.postgresql.Driver";
+        String user = "postgres";
         String senha = "root";
-        String url = "jdbc:mysql://localhost:3306/academia_relacional";
+        String url = "jdbc:postgresql://localhost:5432/academia_relacional";
 
-        // private static final String URL = "jdbc:mysql://localhost:3306/academia_relacional";
-        // private static final String USER = "root";
-        // private static final String PASSWORD = "root";
+        // String driver = "com.mysql.cj.jdbc.Driver";
+        // String user = "root";
+        // String senha = "root";
+        // String url = "jdbc:mysql://localhost:3306/academia_relacional";
 
         try {
             Class.forName(driver);

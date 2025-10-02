@@ -52,6 +52,7 @@ public class BeneficioCRUD {
     
     private void listar() throws SQLException {
         String sql = "SELECT * FROM beneficios";
+        
         try (Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
