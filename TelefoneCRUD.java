@@ -13,7 +13,7 @@ public class TelefoneCRUD {
     
     public void menu() throws SQLException {
         while (true) {
-            System.out.println("\n=== BENEFÍCIOS ===");
+            System.out.println("\n=== TELEFONES ===");
             System.out.println("1. Cadastrar");
             System.out.println("2. Listar");
             System.out.println("3. Atualizar");
